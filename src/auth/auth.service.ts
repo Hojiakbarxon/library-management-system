@@ -114,7 +114,7 @@ export class AuthService {
       where: { login },
       relations: { role: true }
     }) as User;
-    
+
     if (!user) {
       res.clearCookie("refreshToken")
       throw new BadRequestException(`Login or Password is wrong`);
@@ -131,7 +131,7 @@ export class AuthService {
       full_name: user?.full_name,
       role: user?.role,
     };
-    
+
     const aToken = this.Token.getAccessToken(payload);
     const rToken = this.Token.getRefreshToken(res, payload);
 
@@ -184,6 +184,7 @@ export class AuthService {
       throw new BadRequestException(`OTP is incorrect or expired`);
     }
 
+    await conflicts.mustBeUnique({ login: new_login }, this.userRepo, 'User', 'login');
     if (new_password !== repeat_password) {
       throw new BadRequestException(`Password did not match`);
     }
