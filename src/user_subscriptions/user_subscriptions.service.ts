@@ -145,5 +145,27 @@ export class UserSubscriptionsService {
     }
   }
 
-  
+  async getAllUnsubscribedUsers(): Promise<ISuccess> {
+    let users = await this.userRepo.find({
+      where: { subscriptions: { is_active: false } },
+      relations: {
+        role: true,
+        subscriptions: true
+      },
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        role : {
+          name : true
+        }
+      }
+    })
+
+    return {
+      statusCode: 200,
+      message: "All unsubscripted users",
+      data: users
+    }
+  }
 }
