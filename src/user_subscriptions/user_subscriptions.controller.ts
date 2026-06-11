@@ -47,4 +47,10 @@ export class UserSubscriptionsController {
   getSubscriptedUsers() {
     return this.userSubscriptionsService.getAllSubscriptedUsers()
   }
+
+  @Get('usubscripted-user')
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
+  getUnSubscriptedUsers() {
+    return this.userSubscriptionsService.getAllUnsubscribedUsers()
+  }
 }
