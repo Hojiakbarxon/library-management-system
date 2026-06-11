@@ -16,13 +16,15 @@ import { Request } from 'express';
 import { PassThrough } from 'stream';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RoleGuard } from 'src/role/role.guard';
+import { Roles } from 'src/Decorators/role.decorator';
+import { Role } from 'src/config/role-enum';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('user-subscriptions')
 export class UserSubscriptionsController {
   constructor(
     private readonly userSubscriptionsService: UserSubscriptionsService,
-  ) {}
+  ) { }
 
   @Post('buy-subscription')
   buySubscription(
@@ -39,4 +41,11 @@ export class UserSubscriptionsController {
   getAllSubscriptions(@Req() req) {
     return this.userSubscriptionsService.getAllSubscriptions(+req.user.id);
   }
+
+  @Get('subscripted-user')
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
+  getSubscriptedUsers() {
+    return this.userSubscriptionsService.getAllSubscriptedUsers()
+  }
+
 }
