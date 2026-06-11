@@ -18,7 +18,7 @@ export class UserSubscriptionsService {
     @InjectRepository(Subscription)
     private readonly subRepo: Repository<Subscription>,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-  ) {}
+  ) { }
 
   async buySubscription(
     createSubscriptionDto: CreateUserSubscriptionDto,
@@ -117,5 +117,31 @@ export class UserSubscriptionsService {
         remaining_days,
       },
     };
+  }
+
+  async getAllSubscriptedUsers(): Promise<ISuccess> {
+    let users = await this.userRepo.find({
+      where: { subscriptions: { is_active: true } },
+      relations: {
+        role: true,
+        subscriptions : true
+      },
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        subscriptions: {
+          is_active: true,
+          issued_date: true,
+          end_date: true
+        }
+      }
+    })
+
+    return {
+      statusCode: 200,
+      message: "All subscripted users",
+      data: users
+    }
   }
 }
