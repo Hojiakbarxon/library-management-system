@@ -82,7 +82,7 @@ export class RequestsService {
         book,
         status,
         user,
-        purpose : Purpose.return
+        purpose : Purpose.borrow
       });
 
       await this.reqRepo.save(newRequest);
