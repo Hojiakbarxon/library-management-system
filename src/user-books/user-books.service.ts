@@ -71,6 +71,7 @@ export class UserBooksService {
         book: {
           id: true,
           name: true,
+          cover_image : true,
         },
       },
     });
