@@ -25,6 +25,7 @@ import { ForgotPasswordDto } from './dto/forgot-password-dto';
 import { Cache } from 'src/utils/cache.control';
 import { ResetPasswordDto } from './dto/reset-password-dto';
 import { ProcessingUser } from './entities/processing.user.entity';
+import { ResendOtpDto } from './dto/resend-otp-dto';
 
 @Injectable()
 export class AuthService {
@@ -74,6 +75,24 @@ export class AuthService {
     };
   }
 
+  async resendOtp(resendOtpDto: ResendOtpDto): Promise<ISuccess> {
+    let { email } = resendOtpDto;
+    await conflicts.mustExist({ email }, this.penUserRepo, 'User', 'email')
+
+    let otp = generateOtp()
+    await sendMail(email, otp)
+
+    await this.penUserRepo.update({ email }, {
+      otp,
+      expires_at: new Date(Date.now() + 5 * 60 * 1000)
+    })
+
+    return {
+      statusCode: 200,
+      message: "OTP has been resent to your email",
+      data: {}
+    }
+  }
   async confirmOtp(confirmOtpDto: ConfirmOtpDto): Promise<ISuccess> {
     const { email, otp } = confirmOtpDto
     await conflicts.mustExist({ email }, this.penUserRepo, 'User', 'email')
@@ -83,7 +102,7 @@ export class AuthService {
       relations: { role: true },
     })) as PendingUser;
 
-    if (otp !== penUser.otp) {
+    if (!penUser.otp || otp !== penUser.otp) {
       throw new BadRequestException(
         `OTP is incorrect or expired, please register again`,
       );

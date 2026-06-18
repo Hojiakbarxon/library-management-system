@@ -16,6 +16,7 @@ import { SigninAuthDto } from './dto/signin-auth-dto';
 import express from 'express';
 import { ForgotPasswordDto } from './dto/forgot-password-dto';
 import { ResetPasswordDto } from './dto/reset-password-dto';
+import { ResendOtpDto } from './dto/resend-otp-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,10 @@ export class AuthController {
     return this.authService.login(loginAuthDto, 3);
   }
 
+  @Post("resend-otp")
+  resendOtp(@Body() resendOtpDto: ResendOtpDto) {
+    return this.authService.resendOtp(resendOtpDto)
+  }
   @Post('confirm-otp')
   confirmOtp(@Body() confirmOtpDto: ConfirmOtpDto) {
     return this.authService.confirmOtp(confirmOtpDto);

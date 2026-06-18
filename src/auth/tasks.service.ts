@@ -17,7 +17,7 @@ export class TasksSerive {
     private readonly userSubRepo: Repository<UserSubscription>,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async cleanPendingUser(): Promise<boolean> {
     const result = await this.penUser.delete({
       expires_at: LessThan(new Date()),
@@ -26,7 +26,7 @@ export class TasksSerive {
     return true;
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_SECOND)
   async cleanProUser(): Promise<boolean> {
     const result = await this.proUser.delete({
       expires_at: LessThan(new Date()),
