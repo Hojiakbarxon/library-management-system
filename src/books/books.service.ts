@@ -21,7 +21,7 @@ export class BooksService {
     @InjectRepository(Book) private readonly bookRepo: Repository<Book>,
     @InjectRepository(Author) private readonly authorRepo: Repository<Author>,
     @InjectRepository(Genre) private readonly genreRepo: Repository<Genre>,
-  ) {}
+  ) { }
 
   async create(
     createBookDto: CreateBookDto,
@@ -67,6 +67,14 @@ export class BooksService {
         author: true,
         genre: true,
       },
+      select: {
+        id: true,
+        name: true,
+        quantity: true,
+        cover_image: true,
+        author: true,
+        genre: true
+      }
     });
 
     return {
@@ -98,7 +106,7 @@ export class BooksService {
     updateBookDto: UpdateBookDto,
     cover_image: Express.Multer.File,
   ): Promise<ISuccess> {
-    const { author_id, genre_id, name, quantity } = updateBookDto;
+    const { author_id, genre_id, name, quantity, book_details } = updateBookDto;
     const book = (await conflicts.mustExist(
       { id },
       this.bookRepo,
@@ -154,6 +162,10 @@ export class BooksService {
         updateDate.cover_image = `uploads/book_photos/${cover_image.filename}`;
       }
     }
+
+    if (book_details) {
+      updateDate.book_details = book_details;
+    };
 
     await this.bookRepo.update(id, updateDate);
 

@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
@@ -10,6 +11,10 @@ export class CreateBookDto {
   @IsNumber()
   @IsNotEmpty()
   quantity: number;
+
+  @IsString()
+  @Optional()
+  book_details?: string;
 
   @Type(() => Number)
   @IsNumber()

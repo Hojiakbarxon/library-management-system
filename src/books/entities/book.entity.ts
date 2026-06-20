@@ -24,6 +24,9 @@ export class Book {
   @Column({ type: 'varchar', nullable: false })
   cover_image: string;
 
+  @Column({ type: "text", nullable: true })
+  book_details: string;
+
   @ManyToOne(() => Author, (author) => author.books)
   author: Author;
 
