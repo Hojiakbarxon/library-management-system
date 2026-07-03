@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { envConfig } from './config/env.config';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { GlobalFilter } from './common/filters/global/global.filter';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { swaggerSetup } from './startup/swagger.setup';
+import { validationConfig } from './startup/validation.pipe.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,24 +19,9 @@ async function bootstrap() {
 
   app.useGlobalFilters(new GlobalFilter())
 
-  const config = new DocumentBuilder()
-    .setTitle('Library management system')
-    .setDescription(`Library management system documentation`)
-    .setVersion(`1.0`)
-    .addBearerAuth()
-    .build();
+  swaggerSetup(app);
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`/docs`, app, document);
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    }),
-  );
+  validationConfig(app);
 
   app.enableCors({ origin: true, credentials: true })
 
