@@ -6,6 +6,7 @@
 /uploads
 /test
 /.env
+/logs
 
 # Logs
 logs

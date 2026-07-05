@@ -1,7 +1,14 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Catch()
 export class GlobalFilter<T> implements ExceptionFilter {
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {
+
+  }
   catch(exception: T, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -19,12 +26,14 @@ export class GlobalFilter<T> implements ExceptionFilter {
       if (typeof res === 'string') {
         message = res;
       } else if (typeof res === 'object' && res !== null && 'message' in res) {
-        
         message = (res as any).message;
       }
     } else if (exception instanceof Error) {
-      console.log(exception.message);
-      console.log(exception.stack);
+      this.logger.error(exception.message, {
+        stack: exception.stack,
+        path: request.url,
+        method: request.method
+      });
     }
 
     response.status(status).json({
