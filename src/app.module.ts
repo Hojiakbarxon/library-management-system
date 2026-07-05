@@ -26,6 +26,10 @@ import { UserSubscription } from './user_subscriptions/entities/user_subscriptio
 import { Status } from './statuses/status.entity';
 import { Request } from './requests/entities/request.entity';
 import { UserBook } from './user-books/entities/user-book.entity';
+import { APP_FILTER } from '@nestjs/core';
+import { GlobalFilter } from './common/filters/global/global.filter';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './logger/winston.config';
 
 @Module({
   imports: [
@@ -34,6 +38,7 @@ import { UserBook } from './user-books/entities/user-book.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    WinstonModule.forRoot(winstonConfig),
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: envConfig.db_url,
@@ -64,6 +69,11 @@ import { UserBook } from './user-books/entities/user-book.entity';
     UserSubscriptionsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalFilter
+    }
+  ],
 })
-export class AppModule {}
+export class AppModule { }

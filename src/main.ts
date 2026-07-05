@@ -8,16 +8,18 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { swaggerSetup } from './startup/swagger.setup';
 import { validationConfig } from './startup/validation.pipe.config';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './logger/winston.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: WinstonModule.createLogger(winstonConfig)
+  });
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/api/uploads' });
-
-  app.useGlobalFilters(new GlobalFilter())
 
   swaggerSetup(app);
 
