@@ -1,4 +1,4 @@
-# 📚 Library Management System API
+# 📚 Library Management System Backend API
 
 A RESTful backend API for managing a library — built with **NestJS**, **TypeORM**, and **PostgreSQL**. Supports user registration with OTP verification, role-based access control, subscription-based book borrowing, and a full borrow/return request lifecycle.
 
